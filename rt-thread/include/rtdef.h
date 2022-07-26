@@ -59,12 +59,13 @@ extern "C" {
 
 /**@{*/
 
-/* RT-Thread version information */
+/*
+ * 内核版本号。4.1.0
+ */
 #define RT_VERSION                      4L              /**< major version number */
 #define RT_SUBVERSION                   1L              /**< minor version number */
 #define RT_REVISION                     0L              /**< revise version number */
 
-/* RT-Thread version */
 #define RTTHREAD_VERSION                ((RT_VERSION * 10000) + \
                                          (RT_SUBVERSION * 100) + RT_REVISION)
 
