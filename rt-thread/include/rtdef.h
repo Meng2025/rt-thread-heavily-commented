@@ -53,15 +53,8 @@
 extern "C" {
 #endif
 
-/**
- * @addtogroup BasicDef
- */
 
-/**@{*/
-
-/*
- * 内核版本号。4.1.0
- */
+/* 内核版本号。4.1.0 */
 #define RT_VERSION                      4L              /**< major version number */
 #define RT_SUBVERSION                   1L              /**< minor version number */
 #define RT_REVISION                     0L              /**< revise version number */
@@ -69,7 +62,11 @@ extern "C" {
 #define RTTHREAD_VERSION                ((RT_VERSION * 10000) + \
                                          (RT_SUBVERSION * 100) + RT_REVISION)
 
-/* RT-Thread basic data type definitions */
+
+
+/*-------------------------------------------------- 基本数据类型别名 --------------------------------------------------*/
+
+/* 基本数据类型定义，类型都显性指出了signed，避免编译器带来的差异 */
 #ifndef RT_USING_ARCH_DATA_TYPE
 typedef signed   char                   rt_int8_t;      /**<  8bit integer type */
 typedef signed   short                  rt_int16_t;     /**< 16bit integer type */
@@ -89,6 +86,7 @@ typedef unsigned int                    rt_size_t;      /**< Type for size numbe
 #endif /* ARCH_CPU_64BIT */
 #endif /* RT_USING_ARCH_DATA_TYPE */
 
+/* base和CPU位数相关，因此叫与CPU关联的数据类型 */
 typedef int                             rt_bool_t;      /**< boolean type */
 typedef long                            rt_base_t;      /**< Nbit CPU related date type */
 typedef unsigned long                   rt_ubase_t;     /**< Nbit unsigned CPU related data type */
@@ -100,28 +98,35 @@ typedef rt_base_t                       rt_flag_t;      /**< Type for flags */
 typedef rt_ubase_t                      rt_dev_t;       /**< Type for device */
 typedef rt_base_t                       rt_off_t;       /**< Type for offset */
 
-/* boolean type definitions */
+/* 布尔值，用宏定义 */
 #define RT_TRUE                         1               /**< boolean true  */
 #define RT_FALSE                        0               /**< boolean fails */
 
-/**@}*/
 
-/* maximum value of base type */
+
+/*-------------------------------------------------- 数据最大表示范围 --------------------------------------------------*/
+
+/* 不同数据类型可以表示的最大值 */
 #define RT_UINT8_MAX                    0xff            /**< Maximum number of UINT8 */
 #define RT_UINT16_MAX                   0xffff          /**< Maximum number of UINT16 */
 #define RT_UINT32_MAX                   0xffffffff      /**< Maximum number of UINT32 */
 #define RT_TICK_MAX                     RT_UINT32_MAX   /**< Maximum number of tick */
 
-/* maximum value of ipc type */
+/* 用于线程同步控制的变量的最大值 */
 #define RT_SEM_VALUE_MAX                RT_UINT16_MAX   /**< Maximum number of semaphore .value */
 #define RT_MUTEX_VALUE_MAX              RT_UINT16_MAX   /**< Maximum number of mutex .value */
 #define RT_MUTEX_HOLD_MAX               RT_UINT8_MAX    /**< Maximum number of mutex .hold */
 #define RT_MB_ENTRY_MAX                 RT_UINT16_MAX   /**< Maximum number of mailbox .entry */
 #define RT_MQ_ENTRY_MAX                 RT_UINT16_MAX   /**< Maximum number of message queue .entry */
 
+/* 函数传入参数不使用时，为了防止编译器警告 */
 #define RT_UNUSED(x)                   ((void)x)
 
-/* Compiler Related Definitions */
+
+
+/*-------------------------------------------------- 编译器相关的关键字重写 --------------------------------------------------*/
+
+/* 和编译器相关的条件编译选项 */
 #if defined(__ARMCC_VERSION)           /* ARM Compiler */
     #include <stdarg.h>
     #define RT_SECTION(x)               __attribute__((section(x)))
@@ -202,10 +207,19 @@ typedef rt_base_t                       rt_off_t;       /**< Type for offset */
     #error not supported tool chain
 #endif
 
-/* initialization export */
+
+
+/*----------------------------------------------- 宏定义导出自动初始化机制的实现 --------------------------------------------------*/
+
+/* 自动初始化机制 */
 #ifdef RT_USING_COMPONENTS_INIT
+
+/* init_fn_t fun_p; 函数指针类型别名，增加可读性的一种方式 */
 typedef int (*init_fn_t)(void);
+
 #ifdef _MSC_VER
+
+/* 编译控制，自动初始化的函数以读的方式放在指定段 */
 #pragma section("rti_fn$f",read)
     #if RT_DEBUG_INIT
         struct rt_init_desc
@@ -221,11 +235,14 @@ typedef int (*init_fn_t)(void);
                                 RT_USED const struct rt_init_desc __rt_init_msc_##fn =  \
                                 {__rti_level_##fn, fn, __rti_##fn##_name};
     #else
+
+        /* 初始化顺序（优先级）为字符串；要初始化的函数为指针常量 */
         struct rt_init_desc
         {
             const char* level;
             const init_fn_t fn;
         };
+
         #define INIT_EXPORT(fn, level)                                  \
                                 const char __rti_level_##fn[] = ".rti_fn." level;       \
                                 __declspec(allocate("rti_fn$f"))                        \
@@ -252,9 +269,10 @@ typedef int (*init_fn_t)(void);
 #define INIT_EXPORT(fn, level)
 #endif
 
-/* board init routines will be called in board_init() function */
+/* 板级初始化，导出的函数会在 board_init() 执行时自动执行 */
 #define INIT_BOARD_EXPORT(fn)           INIT_EXPORT(fn, "1")
 
+/* 其他层次的初始化，在做系统开发的时候要考虑从自己负责的模块是哪个层次的 */
 /* pre/device/component/env/app init routines will be called in init_thread */
 /* components pre-initialization (pure software initialization) */
 #define INIT_PREV_EXPORT(fn)            INIT_EXPORT(fn, "2")
@@ -278,6 +296,10 @@ typedef int (*init_fn_t)(void);
 #define FINSH_FUNCTION_EXPORT_CMD(name, cmd, desc)
 #endif
 
+
+
+/*-------------------------------------------------- 不会分类的宏定义 --------------------------------------------------*/
+
 /* event length */
 #define RT_EVENT_LENGTH                 32
 
@@ -299,13 +321,11 @@ typedef int (*init_fn_t)(void);
 #define RT_KERNEL_REALLOC(ptr, size)    rt_realloc(ptr, size)
 #endif
 
-/**
- * @addtogroup Error
- */
 
-/**@{*/
 
-/* RT-Thread error code definitions */
+/*-------------------------------------------------- 错误返回码 --------------------------------------------------*/
+
+/* 错误码，可读性 */
 #define RT_EOK                          0               /**< There is no error */
 #define RT_ERROR                        1               /**< A generic error happens */
 #define RT_ETIMEOUT                     2               /**< Timed out */
@@ -318,7 +338,9 @@ typedef int (*init_fn_t)(void);
 #define RT_EINTR                        9               /**< Interrupted system call */
 #define RT_EINVAL                       10              /**< Invalid argument */
 
-/**@}*/
+
+
+/*-------------------------------------------------- align重写，代码风格 --------------------------------------------------*/
 
 /**
  * @ingroup BasicDef
@@ -338,17 +360,11 @@ typedef int (*init_fn_t)(void);
  */
 #define RT_ALIGN_DOWN(size, align)      ((size) & ~((align) - 1))
 
-/**
- * @ingroup BasicDef
- *
- * @def RT_NULL
- * Similar as the \c NULL in C library.
- */
 #define RT_NULL                         (0)
 
-/**
- * Double List structure
- */
+/*-------------------------------------------------- 基本数据结构定义 --------------------------------------------------*/
+
+/* 双向链表 */
 struct rt_list_node
 {
     struct rt_list_node *next;                          /**< point to next node. */
@@ -356,33 +372,28 @@ struct rt_list_node
 };
 typedef struct rt_list_node rt_list_t;                  /**< Type for lists. */
 
-/**
- * Single List structure
- */
+
+/* 单向链表 */
 struct rt_slist_node
 {
     struct rt_slist_node *next;                         /**< point to next node. */
 };
 typedef struct rt_slist_node rt_slist_t;                /**< Type for single list. */
 
-/**
- * @addtogroup KernelObject
- */
 
-/**@{*/
+
+/*-------------------------------------------------- 内核对象 --------------------------------------------------*/
 
 /*
  * kernel object macros
  */
 #define RT_OBJECT_FLAG_MODULE           0x80            /**< is module object. */
 
-/**
- * Base structure of Kernel object
- */
+/* 内核对象基类 */
 struct rt_object
 {
-    char       name[RT_NAME_MAX];                       /**< name of kernel object */
-    rt_uint8_t type;                                    /**< type of kernel object */
+    char       name[RT_NAME_MAX];                       /* 内核对象名 */
+    rt_uint8_t type;                                    /* 内核对象类型 */
     rt_uint8_t flag;                                    /**< flag of kernel object */
 
 #ifdef RT_USING_MODULE
@@ -390,25 +401,11 @@ struct rt_object
 #endif
     rt_list_t  list;                                    /**< list node of kernel object */
 };
+
+/* 实际使用的是指向结构体的指针 */
 typedef struct rt_object *rt_object_t;                  /**< Type for kernel objects. */
 
-/**
- *  The object type can be one of the follows with specific
- *  macros enabled:
- *  - Thread
- *  - Semaphore
- *  - Mutex
- *  - Event
- *  - MailBox
- *  - MessageQueue
- *  - MemHeap
- *  - MemPool
- *  - Device
- *  - Timer
- *  - Module
- *  - Unknown
- *  - Static
- */
+/* 内核对象类型枚举 */
 enum rt_object_class_type
 {
     RT_Object_Class_Null          = 0x00,      /**< The object is not used. */
@@ -531,19 +528,10 @@ typedef siginfo_t rt_siginfo_t;
 #endif
 /**@}*/
 
-/**
- * @addtogroup Thread
- */
 
-/**@{*/
+/*----------------------------------------------------- 线程相关的类型 ----------------------------------------------------*/
 
-/*
- * Thread
- */
-
-/*
- * thread state definitions
- */
+/* 线程状态 */
 #define RT_THREAD_INIT                  0x00                /**< Initialized status */
 #define RT_THREAD_READY                 0x01                /**< Ready status */
 #define RT_THREAD_SUSPEND               0x02                /**< Suspend status */
@@ -607,9 +595,7 @@ struct rt_cpu
 
 #endif
 
-/**
- * Thread structure
- */
+/* 线程控制块 */
 struct rt_thread
 {
     /* rt object */
@@ -690,7 +676,6 @@ struct rt_thread
 };
 typedef struct rt_thread *rt_thread_t;
 
-/**@}*/
 
 /**
  * @addtogroup IPC
@@ -920,16 +905,13 @@ typedef struct rt_mempool *rt_mp_t;
 
 /**@}*/
 
+
+
+/*------------------------------------------------------ 设备相关类型定义 --------------------------------------------*/
+
 #ifdef RT_USING_DEVICE
-/**
- * @addtogroup Device
- */
 
-/**@{*/
-
-/**
- * device (I/O) class type
- */
+/* 设备类型枚举 */
 enum rt_device_class_type
 {
     RT_Device_Class_Char = 0,                           /**< character device */
