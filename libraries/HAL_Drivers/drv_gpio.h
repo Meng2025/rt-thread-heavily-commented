@@ -23,17 +23,8 @@ extern "C" {
 
 #define __STM32_PORT(port)  GPIO##port##_BASE
 
-#if defined(SOC_SERIES_STM32MP1)
-#define GET_PIN(PORTx,PIN) (GPIO##PORTx == GPIOZ) ? (176 + PIN) : ((rt_base_t)((16 * ( ((rt_base_t)__STM32_PORT(PORTx) - (rt_base_t)GPIOA_BASE)/(0x1000UL) )) + PIN))
-#else
-#define GET_PIN(PORTx,PIN) (rt_base_t)((16 * ( ((rt_base_t)__STM32_PORT(PORTx) - (rt_base_t)GPIOA_BASE)/(0x0400UL) )) + PIN)
-#endif
 
-struct pin_irq_map
-{
-    rt_uint16_t pinbit;
-    IRQn_Type irqno;
-};
+#define GET_PIN(PORTx,PIN) (rt_base_t)((16 * ( ((rt_base_t)__STM32_PORT(PORTx) - (rt_base_t)GPIOA_BASE)/(0x0400UL) )) + PIN)
 
 int rt_hw_pin_init(void);
 

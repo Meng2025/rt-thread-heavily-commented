@@ -15,7 +15,39 @@
 
 int main(void)
 {
-
     
-    return 0;
+    
+    struct rt_device_pin_status pin_control;
+
+    pin_control.pin = GET_PIN(F, 14);
+    rt_pin_mode(pin_control.pin, PIN_MODE_OUTPUT);
+    
+    rt_device_t pin_dev = rt_device_find("pin");
+    
+    if (!pin_dev)
+    {
+        rt_kprintf("find failed!\n");
+    }
+    
+    
+    
+    
+    
+    while(1)
+    {
+        pin_control.status = PIN_HIGH;
+        
+
+        
+        
+        
+        rt_device_write(pin_dev, 0, &pin_control, sizeof(struct rt_device_pin_status));
+        
+        rt_thread_mdelay(200);
+        
+        pin_control.status = PIN_HIGH;
+        rt_device_write(pin_dev, 0, &pin_control, sizeof(struct rt_device_pin_status));  
+        rt_thread_mdelay(800);
+    
+    }
 }

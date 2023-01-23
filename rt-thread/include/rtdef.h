@@ -1020,7 +1020,7 @@ struct rt_wqueue
 typedef struct rt_wqueue rt_wqueue_t;
 
 /**
- * Device structure
+ * 设备类，继承自对象类
  */
 struct rt_device
 {
