@@ -75,24 +75,24 @@ static rt_err_t _pin_control(rt_device_t dev, int cmd, void *args)
 
 int rt_device_pin_register(const char *name, const struct rt_pin_ops *ops, void *user_data)
 {
-    /* 引脚注册函数注册设备相关数据 */
-    /* 设备(类)的数据 */
+    /* pin注册函数，struct rt_device;的数据 */
     _hw_pin.parent.type         = RT_Device_Class_Miscellaneous;
     _hw_pin.parent.rx_indicate  = RT_NULL;
     _hw_pin.parent.tx_complete  = RT_NULL;
 
+    /* struct rt_device; 里的通用设备操作方法，对接 rt_device_xx 方法 */
     _hw_pin.parent.init         = RT_NULL;
     _hw_pin.parent.open         = RT_NULL;
     _hw_pin.parent.close        = RT_NULL;
     _hw_pin.parent.read         = _pin_read;
     _hw_pin.parent.write        = _pin_write;
     _hw_pin.parent.control      = _pin_control;
-
-    _hw_pin.ops                 = ops;
     _hw_pin.parent.user_data    = user_data;
+    
+    /* pin设备专用操作方法 */
+    _hw_pin.ops                 = ops;
 
-    /* register a character device */
-    /* 设备注册函数注册设备相关数据 */
+    /* 调用通用 device 注册方法，注册字符设备 */
     rt_device_register(&_hw_pin.parent, name, RT_DEVICE_FLAG_RDWR);
 
     return 0;

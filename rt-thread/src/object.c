@@ -34,7 +34,7 @@
 
 
 /*
- * 通过条件编译来控制枚举值RT_Object_Info_Unknown，
+ * 通过条件编译来控制枚举值 RT_Object_Info_Unknown，
  * 实现在编译过程中调节_object_container容器的大小。
  */
 enum rt_object_info_type

@@ -298,7 +298,7 @@ typedef int (*init_fn_t)(void);
 
 
 
-/*-------------------------------------------------- 不会分类的宏定义 --------------------------------------------------*/
+/*-------------------------------------------------- 内存管理相关的宏定义 --------------------------------------------------*/
 
 /* event length */
 #define RT_EVENT_LENGTH                 32
@@ -529,7 +529,7 @@ typedef siginfo_t rt_siginfo_t;
 /**@}*/
 
 
-/*----------------------------------------------------- 线程相关的类型 ----------------------------------------------------*/
+/*----------------------------------------------------- 内核类的子类：线程类 ----------------------------------------------------*/
 
 /* 线程状态 */
 #define RT_THREAD_INIT                  0x00                /**< Initialized status */
@@ -598,7 +598,7 @@ struct rt_cpu
 /* 线程控制块 */
 struct rt_thread
 {
-    /* rt object */
+    /* 继承自 rt object */
     char        name[RT_NAME_MAX];                      /**< the name of thread */
     rt_uint8_t  type;                                   /**< type of object */
     rt_uint8_t  flags;                                  /**< thread's flags */
@@ -610,6 +610,7 @@ struct rt_thread
     rt_list_t   list;                                   /**< the object list */
     rt_list_t   tlist;                                  /**< the thread list */
 
+    /* 新的数据和方法 */
     /* stack point and entry */
     void       *sp;                                     /**< stack point */
     void       *entry;                                  /**< entry */
@@ -1026,11 +1027,11 @@ struct rt_device
 {
     struct rt_object          parent;                   /**< inherit from rt_object */
 
-    enum rt_device_class_type type;                     /**< device type */
+    enum rt_device_class_type type;                     /**< 设备的类型 */
     rt_uint16_t               flag;                     /**< device flag */
     rt_uint16_t               open_flag;                /**< device open flag */
 
-    rt_uint8_t                ref_count;                /**< reference count */
+    rt_uint8_t                ref_count;                /**< 设备打开的次数 */
     rt_uint8_t                device_id;                /**< 0 - 255 */
 
     /* device call back */
