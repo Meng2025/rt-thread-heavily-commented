@@ -12,23 +12,34 @@
 #include <drivers/pin.h>
 #include <finsh.h>
 
+/*
+ * 驱动框架层的抽象，write、read、control
+ *
+ */
+
+
 static struct rt_device_pin _hw_pin;
 
+/*  rt_device_t 里的read，通用read方法调用此函数
+    _hw_pin.parent.read         = _pin_read;  
+    此函数内部调用子类 pin 里的 ops 读方法
+    */
 static rt_size_t _pin_read(rt_device_t dev, rt_off_t pos, void *buffer, rt_size_t size)
 {
-    struct rt_device_pin_status *status;
-    struct rt_device_pin *pin = (struct rt_device_pin *)dev;
+    struct rt_device_pin_status *pin_status;
+    struct rt_device_pin *dev_pin = (struct rt_device_pin *)dev;
 
     /* check parameters */
-    RT_ASSERT(pin != RT_NULL);
+    RT_ASSERT(dev_pin != RT_NULL);
 
-    status = (struct rt_device_pin_status *) buffer;
-    if (status == RT_NULL || size != sizeof(*status)) return 0;
+    pin_status = (struct rt_device_pin_status *) buffer;
+    if (pin_status == RT_NULL || size != sizeof(*pin_status)) return 0;
 
-    status->status = pin->ops->pin_read(dev, status->pin);
+    pin_status->status = dev_pin->ops->pin_read(dev, pin_status->pin);
     return size;
 }
 
+/* 同read，未修改局部变量名 */
 static rt_size_t _pin_write(rt_device_t dev, rt_off_t pos, const void *buffer, rt_size_t size)
 {
     struct rt_device_pin_status *status;
@@ -123,3 +134,7 @@ rt_base_t rt_pin_get(const char *name)
     return _hw_pin.ops->pin_get(name);
 }
 FINSH_FUNCTION_EXPORT_ALIAS(rt_pin_get, pinGet, get pin number from hardware pin);
+
+
+
+
