@@ -45,13 +45,7 @@ struct rt_device_pin_status
     rt_uint16_t pin;
     rt_uint16_t status;
 };
-struct rt_pin_irq_hdr
-{
-    rt_int16_t        pin;
-    rt_uint16_t       mode;
-    void (*hdr)(void *args);
-    void             *args;
-};
+
 struct rt_pin_ops
 {
     void (*pin_mode)(struct rt_device *device, rt_base_t pin, rt_base_t mode);

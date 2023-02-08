@@ -21,7 +21,6 @@ int main(void)
     pin_control.pin = GET_PIN(F, 14);
     
     struct rt_device_pin_mode pin_mode;
-    
     pin_mode.pin  = GET_PIN(F, 14);
     pin_mode.mode = PIN_MODE_OUTPUT;
     
@@ -31,9 +30,9 @@ int main(void)
     
     rt_device_t pin_dev = rt_device_find("pin");
     
-    rt_device_control(pin_dev,RT_NULL,&pin_mode);
+    rt_device_control(pin_dev,RT_NULL, &pin_mode);
     
-    rt_device_open(pin_dev,RT_DEVICE_FLAG_RDWR);
+    rt_device_open(pin_dev, RT_DEVICE_FLAG_RDWR);
     
     
     while(1)
