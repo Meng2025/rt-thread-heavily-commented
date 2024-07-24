@@ -5,46 +5,26 @@
  *
  * Change Logs:
  * Date           Author       Notes
- * 2018-11-06     SummerGift   first version
+ * 2019-03-08     obito0       first version
  */
 
 #include <rtthread.h>
 #include <rtdevice.h>
 #include <board.h>
 
+/* defined the LED0 pin: PC13 */
+#define LED0_PIN    GET_PIN(C, 13)
 
 int main(void)
 {
-    
-    
-    struct rt_device_pin_status pin_control;
-    pin_control.pin = GET_PIN(F, 14);
-    
-    struct rt_device_pin_mode pin_mode;
-    pin_mode.pin  = GET_PIN(F, 14);
-    pin_mode.mode = PIN_MODE_OUTPUT;
-    
-    //rt_pin_mode(pin_control.pin, PIN_MODE_OUTPUT);
-    
-    
-    
-    rt_device_t pin_dev = rt_device_find("pin");
-    
-    rt_device_control(pin_dev,RT_NULL, &pin_mode);
-    
-    rt_device_open(pin_dev, RT_DEVICE_FLAG_RDWR);
-    
-    
-    while(1)
+    /* set LED0 pin mode to output */
+    rt_pin_mode(LED0_PIN, PIN_MODE_OUTPUT);
+
+    while (1)
     {
-        pin_control.status = PIN_LOW;
-        rt_device_write(pin_dev, 0, &pin_control, sizeof(struct rt_device_pin_status));
-        
-        rt_thread_mdelay(200);
-        
-        pin_control.status = PIN_HIGH;
-        rt_device_write(pin_dev, 0, &pin_control, sizeof(struct rt_device_pin_status));  
-        rt_thread_mdelay(800);
-    
+        rt_pin_write(LED0_PIN, PIN_HIGH);
+        rt_thread_mdelay(500);
+        rt_pin_write(LED0_PIN, PIN_LOW);
+        rt_thread_mdelay(500);
     }
 }

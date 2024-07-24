@@ -21,7 +21,6 @@
 /* kservice optimization */
 
 #define RT_DEBUG
-#define RT_DEBUG_COLOR
 
 /* Inter-Thread communication */
 
@@ -43,12 +42,12 @@
 #define RT_USING_DEVICE
 #define RT_USING_CONSOLE
 #define RT_CONSOLEBUF_SIZE 128
-#define RT_CONSOLE_DEVICE_NAME "uart6"
+#define RT_CONSOLE_DEVICE_NAME "uart1"
 #define RT_VER_NUM 0x40100
 #define ARCH_ARM
 #define RT_USING_CPU_FFS
 #define ARCH_ARM_CORTEX_M
-#define ARCH_ARM_CORTEX_M4
+#define ARCH_ARM_CORTEX_M3
 
 /* RT-Thread Components */
 
@@ -80,7 +79,6 @@
 #define RT_USING_PIN
 #define RT_USING_SENSOR
 #define RT_USING_SENSOR_CMD
-#define RT_USING_PULSE_ENCODER
 
 /* Using USB */
 
@@ -104,6 +102,9 @@
 /* Utilities */
 
 
+/* RT-Thread Utestcases */
+
+
 /* RT-Thread online packages */
 
 /* IoT - internet of things */
@@ -115,6 +116,15 @@
 
 
 /* Wiced WiFi */
+
+
+/* CYW43012 WiFi */
+
+
+/* BL808 WiFi */
+
+
+/* CYW43439 WiFi */
 
 
 /* IoT Cloud */
@@ -139,9 +149,6 @@
 /* u8g2: a monochrome graphic library */
 
 
-/* PainterEngine: A cross-platform graphics application framework written in C language */
-
-
 /* tools packages */
 
 
@@ -161,19 +168,19 @@
 
 /* peripheral libraries and drivers */
 
+/* HAL & SDK Drivers */
+
+/* STM32 HAL & SDK Drivers */
+
+
+/* Kendryte SDK */
+
+
 /* sensors drivers */
 
 
 /* touch drivers */
 
-
-/* Kendryte SDK */
-
-#define PKG_USING_VIRTUAL_SENSOR
-#define PKG_USING_VIRTUAL_SENSOR_LATEST_VERSION
-#define PKG_USING_VIRTUAL_SENSOR_TEMP
-#define V_SENS_TEMP_DEV_NAME "temperature"
-#define PKG_USING_VIRTUAL_SENSOR_DBG
 
 /* AI packages */
 
@@ -190,25 +197,58 @@
 
 /* entertainment: terminal games and other interesting software packages */
 
+
+/* Arduino libraries */
+
+
+/* Projects and Demos */
+
+
+/* Sensors */
+
+
+/* Display */
+
+
+/* Timing */
+
+
+/* Data Processing */
+
+
+/* Data Storage */
+
+/* Communication */
+
+
+/* Device Control */
+
+
+/* Other */
+
+
+/* Signal IO */
+
+
+/* Uncategorized */
+
 #define SOC_FAMILY_STM32
-#define SOC_SERIES_STM32F4
+#define SOC_SERIES_STM32F1
 
 /* Hardware Drivers Config */
 
-#define SOC_STM32F427II
+#define SOC_STM32F103C8
 
 /* Onboard Peripheral Drivers */
 
+#define BSP_USING_USB_TO_USART
 
 /* On-chip Peripheral Drivers */
 
 #define BSP_USING_GPIO
 #define BSP_USING_UART
-#define BSP_USING_UART6
 #define BSP_USING_UART1
 #define BSP_UART1_RX_USING_DMA
-#define BSP_USING_PULSE_ENCODER
-#define BSP_USING_PULSE_ENCODER4
 
 /* Board extended module Drivers */
 

@@ -49,7 +49,6 @@
  *
  * @return the error code, RT_EOK on initialization successfully.
  */
- /* 设备注册函数，设备分类和设备名字， */
 rt_err_t rt_device_register(rt_device_t dev,
                             const char *name,
                             rt_uint16_t flags)
@@ -60,10 +59,7 @@ rt_err_t rt_device_register(rt_device_t dev,
     if (rt_device_find(name) != RT_NULL)
         return -RT_ERROR;
 
-    /* 注册内核对象，处理 struct rt_object; 的信息。将新的设备挂在对象容器的设备链表上 */
     rt_object_init(&(dev->parent), RT_Object_Class_Device, name);
-    
-    /* struct rt_device; 里的标志信息清零 */
     dev->flag = flags;
     dev->ref_count = 0;
     dev->open_flag = 0;

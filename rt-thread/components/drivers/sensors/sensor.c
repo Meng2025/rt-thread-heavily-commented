@@ -104,20 +104,20 @@ static rt_err_t rt_sensor_irq_init(rt_sensor_t sensor)
 
     rt_pin_mode(sensor->config.irq_pin.pin, sensor->config.irq_pin.mode);
 
-//    if (sensor->config.irq_pin.mode == PIN_MODE_INPUT_PULLDOWN)
-//    {
-//        rt_pin_attach_irq(sensor->config.irq_pin.pin, PIN_IRQ_MODE_RISING, irq_callback, (void *)sensor);
-//    }
-//    else if (sensor->config.irq_pin.mode == PIN_MODE_INPUT_PULLUP)
-//    {
-//        rt_pin_attach_irq(sensor->config.irq_pin.pin, PIN_IRQ_MODE_FALLING, irq_callback, (void *)sensor);
-//    }
-//    else if (sensor->config.irq_pin.mode == PIN_MODE_INPUT)
-//    {
-//        rt_pin_attach_irq(sensor->config.irq_pin.pin, PIN_IRQ_MODE_RISING_FALLING, irq_callback, (void *)sensor);
-//    }
+    if (sensor->config.irq_pin.mode == PIN_MODE_INPUT_PULLDOWN)
+    {
+        rt_pin_attach_irq(sensor->config.irq_pin.pin, PIN_IRQ_MODE_RISING, irq_callback, (void *)sensor);
+    }
+    else if (sensor->config.irq_pin.mode == PIN_MODE_INPUT_PULLUP)
+    {
+        rt_pin_attach_irq(sensor->config.irq_pin.pin, PIN_IRQ_MODE_FALLING, irq_callback, (void *)sensor);
+    }
+    else if (sensor->config.irq_pin.mode == PIN_MODE_INPUT)
+    {
+        rt_pin_attach_irq(sensor->config.irq_pin.pin, PIN_IRQ_MODE_RISING_FALLING, irq_callback, (void *)sensor);
+    }
 
-//    rt_pin_irq_enable(sensor->config.irq_pin.pin, RT_TRUE);
+    rt_pin_irq_enable(sensor->config.irq_pin.pin, RT_TRUE);
 
     LOG_I("interrupt init success");
 
@@ -265,7 +265,7 @@ static rt_err_t rt_sensor_close(rt_device_t dev)
         /* Sensor disable interrupt */
         if (sensor->config.irq_pin.pin != RT_PIN_NONE)
         {
-//            rt_pin_irq_enable(sensor->config.irq_pin.pin, RT_FALSE);
+            rt_pin_irq_enable(sensor->config.irq_pin.pin, RT_FALSE);
         }
     }
 

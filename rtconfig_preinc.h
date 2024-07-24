@@ -7,7 +7,7 @@
 
 #define HAVE_CCONFIG_H
 #define RT_USING_NEWLIB
-#define STM32F427xx
+#define STM32F103xB
 #define USE_HAL_DRIVER
 #define _POSIX_C_SOURCE 1
 #define __RTTHREAD__

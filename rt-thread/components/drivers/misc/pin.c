@@ -10,36 +10,27 @@
  */
 
 #include <drivers/pin.h>
+
+#ifdef RT_USING_FINSH
 #include <finsh.h>
-
-/*
- * 驱动框架层的抽象，write、read、control
- *
- */
-
+#endif
 
 static struct rt_device_pin _hw_pin;
-
-/*  rt_device_t 里的read，通用read方法调用此函数
-    _hw_pin.parent.read         = _pin_read;  
-    此函数内部调用子类 pin 里的 ops 读方法
-    */
 static rt_size_t _pin_read(rt_device_t dev, rt_off_t pos, void *buffer, rt_size_t size)
 {
-    struct rt_device_pin_status *pin_status;
-    struct rt_device_pin *dev_pin = (struct rt_device_pin *)dev;
+    struct rt_device_pin_status *status;
+    struct rt_device_pin *pin = (struct rt_device_pin *)dev;
 
     /* check parameters */
-    RT_ASSERT(dev_pin != RT_NULL);
+    RT_ASSERT(pin != RT_NULL);
 
-    pin_status = (struct rt_device_pin_status *) buffer;
-    if (pin_status == RT_NULL || size != sizeof(*pin_status)) return 0;
+    status = (struct rt_device_pin_status *) buffer;
+    if (status == RT_NULL || size != sizeof(*status)) return 0;
 
-    pin_status->status = dev_pin->ops->pin_read(dev, pin_status->pin);
+    status->status = pin->ops->pin_read(dev, status->pin);
     return size;
 }
 
-/* 同read，未修改局部变量名 */
 static rt_size_t _pin_write(rt_device_t dev, rt_off_t pos, const void *buffer, rt_size_t size)
 {
     struct rt_device_pin_status *status;
@@ -49,7 +40,6 @@ static rt_size_t _pin_write(rt_device_t dev, rt_off_t pos, const void *buffer, r
     RT_ASSERT(pin != RT_NULL);
 
     status = (struct rt_device_pin_status *) buffer;
-        
     if (status == RT_NULL || size != sizeof(*status)) return 0;
 
     pin->ops->pin_write(dev, (rt_base_t)status->pin, (rt_base_t)status->status);
@@ -73,31 +63,74 @@ static rt_err_t _pin_control(rt_device_t dev, int cmd, void *args)
     return 0;
 }
 
+#ifdef RT_USING_DEVICE_OPS
+const static struct rt_device_ops pin_ops =
+{
+    RT_NULL,
+    RT_NULL,
+    RT_NULL,
+    _pin_read,
+    _pin_write,
+    _pin_control
+};
+#endif
+
 int rt_device_pin_register(const char *name, const struct rt_pin_ops *ops, void *user_data)
 {
-    /* pin注册函数，struct rt_device;的数据 */
     _hw_pin.parent.type         = RT_Device_Class_Miscellaneous;
     _hw_pin.parent.rx_indicate  = RT_NULL;
     _hw_pin.parent.tx_complete  = RT_NULL;
 
-    /* struct rt_device; 里的通用设备操作方法，对接 rt_device_xx 方法 */
+#ifdef RT_USING_DEVICE_OPS
+    _hw_pin.parent.ops          = &pin_ops;
+#else
     _hw_pin.parent.init         = RT_NULL;
     _hw_pin.parent.open         = RT_NULL;
     _hw_pin.parent.close        = RT_NULL;
     _hw_pin.parent.read         = _pin_read;
     _hw_pin.parent.write        = _pin_write;
     _hw_pin.parent.control      = _pin_control;
-    _hw_pin.parent.user_data    = user_data;
-    
-    /* pin设备专用操作方法 */
-    _hw_pin.ops                 = ops;
+#endif
 
-    /* 调用通用 device 注册方法，注册字符设备 */
+    _hw_pin.ops                 = ops;
+    _hw_pin.parent.user_data    = user_data;
+
+    /* register a character device */
     rt_device_register(&_hw_pin.parent, name, RT_DEVICE_FLAG_RDWR);
 
     return 0;
 }
 
+rt_err_t rt_pin_attach_irq(rt_int32_t pin, rt_uint32_t mode,
+                             void (*hdr)(void *args), void  *args)
+{
+    RT_ASSERT(_hw_pin.ops != RT_NULL);
+    if(_hw_pin.ops->pin_attach_irq)
+    {
+        return _hw_pin.ops->pin_attach_irq(&_hw_pin.parent, pin, mode, hdr, args);
+    }
+    return -RT_ENOSYS;
+}
+
+rt_err_t rt_pin_detach_irq(rt_int32_t pin)
+{
+    RT_ASSERT(_hw_pin.ops != RT_NULL);
+    if(_hw_pin.ops->pin_detach_irq)
+    {
+        return _hw_pin.ops->pin_detach_irq(&_hw_pin.parent, pin);
+    }
+    return -RT_ENOSYS;
+}
+
+rt_err_t rt_pin_irq_enable(rt_base_t pin, rt_uint32_t enabled)
+{
+    RT_ASSERT(_hw_pin.ops != RT_NULL);
+    if(_hw_pin.ops->pin_irq_enable)
+    {
+        return _hw_pin.ops->pin_irq_enable(&_hw_pin.parent, pin, enabled);
+    }
+    return -RT_ENOSYS;
+}
 
 /* RT-Thread Hardware PIN APIs */
 void rt_pin_mode(rt_base_t pin, rt_base_t mode)
@@ -134,7 +167,3 @@ rt_base_t rt_pin_get(const char *name)
     return _hw_pin.ops->pin_get(name);
 }
 FINSH_FUNCTION_EXPORT_ALIAS(rt_pin_get, pinGet, get pin number from hardware pin);
-
-
-
-

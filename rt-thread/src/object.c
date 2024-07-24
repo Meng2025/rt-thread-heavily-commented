@@ -16,15 +16,6 @@
  * 2022-01-07     Gabriel      Moving __on_rt_xxxxx_hook to object.c
  */
 
-/*
- * 内核部分 Object Management 
- * 这个文件里实现内核对象管理相关的功能
- * 参考官方文档：https://www.rt-thread.org/document/site/#/rt-thread-version/rt-thread-standard/programming-manual/basic/basic?id=rt-thread-%e5%86%85%e6%a0%b8%e5%af%b9%e8%b1%a1%e6%a8%a1%e5%9e%8b
- * 
- * RT-Thread 采用内核对象管理系统来管理所有内核对象。
- * RT-Thread 内核对象包括：线程，信号量，互斥量，事件，邮箱，消息队列和定时器，内存池，设备驱动等。
- *
- */
 #include <rtthread.h>
 #include <rthw.h>
 
@@ -32,10 +23,8 @@
 #include <dlmodule.h>
 #endif /* RT_USING_MODULE */
 
-
 /*
- * 通过条件编译来控制枚举值 RT_Object_Info_Unknown，
- * 实现在编译过程中调节_object_container容器的大小。
+ * define object_info for the number of _object_container items.
  */
 enum rt_object_info_type
 {
